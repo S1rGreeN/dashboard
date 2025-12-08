@@ -8,12 +8,14 @@ import AlertUI from './components/AlertUI';
 import SelectorUI from './components/SelectorUI'
 import IndicatorUI from './components/IndicatorUI'
 import useFetchData from './functions/useFetchData';
+import TableUI from './components/TableUI';
+import ChartUI from './components/ChartUI';
 
 
 
 function App() {
   //const [count, setCount] = useState(0)
-  const { data, isLoading, error } = useFetchData();
+  const dataFetchOutput = useFetchData();
 
   
 
@@ -31,50 +33,51 @@ function App() {
       <Grid size={{ xs: 12, md: 3  }}><SelectorUI></SelectorUI></Grid>
 
       {/*carga*/}
-      {isLoading && (
+      {dataFetchOutput.isLoading && (
         <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>Cargando datos del clima...</Grid>
       )}
       {/*En caso de error */}
-      {error && (
+      {dataFetchOutput.error && (
         <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
             {/* uso el componente AlertUI para mostrar el error real */}
-            <AlertUI description={`Error recuperando datos: ${error}`} />
+            <AlertUI description={`Error recuperando datos: ${dataFetchOutput.error}`} />
         </Grid>
       )}
 
       {/* Indicadores */}
-      {!isLoading && !error && data && (
-        <Grid container size={{ xs: 12, md: 9 }}>Elemento: Indicadores
-          <Grid size={{ xs: 12, md: 3 }}>
+      {!dataFetchOutput.isLoading && !dataFetchOutput.error && dataFetchOutput.data && (
+        <Grid container size={{ xs: 12, md: 9 }}>
+          <Grid size={{ xs: 12, md: 3 }}> 
             <IndicatorUI title='Temperatura (2m)' 
-            description={`${data.current.temperature_2m} ${data.current_units.apparent_temperature}`} />
-          </Grid>
+            description={`${dataFetchOutput.data.current.temperature_2m} ${dataFetchOutput.data.current_units.apparent_temperature}`} />
+          </Grid> 
+          {/*Elemento: Indicadores*/}
 
           <Grid size={{ xs: 12, md: 3 }}>
           <IndicatorUI title='Apparent Temperature' 
-          description={`${data.current.apparent_temperature} ${data.current_units.temperature_2m}`}/>
+          description={`${dataFetchOutput.data.current.apparent_temperature} ${dataFetchOutput.data.current_units.temperature_2m}`}/>
             {/* IndicatorUI con la Temperatura aparente en °C' */}
           </Grid>
 
           <Grid size={{ xs: 12, md: 3 }}>
             {/* IndicatorUI con la Velocidad del viento en km/h' */}
             <IndicatorUI title='Wind Speed (10 m)' 
-            description={`${data.current.wind_speed_10m} ${data.current_units.wind_speed_10m}`}/>
+            description={`${dataFetchOutput.data.current.wind_speed_10m} ${dataFetchOutput.data.current_units.wind_speed_10m}`}/>
           </Grid>
 
           <Grid size={{ xs: 12, md: 3 }}>
             <IndicatorUI title='Relative Humidity (2 m)' 
-            description={`${data.current.relative_humidity_2m} ${data.current_units.relative_humidity_2m}`}/>
+            description={`${dataFetchOutput.data.current.relative_humidity_2m} ${dataFetchOutput.data.current_units.relative_humidity_2m}`}/>
             {/* IndicatorUI con la Humedad relativa en %' */}
           </Grid>
         </Grid>
       )}
 
       {/* Gráfico */}
-      <Grid sx={{ display: { xs: "none", md: "block"} }}>Elemento: Gráfico</Grid>
+      <Grid sx={{ display: { xs: "none", md: "block"} }}>Elemento: Gráfico <ChartUI{...dataFetchOutput}/> </Grid>
 
       {/* Tabla */}
-      <Grid sx={{ display: { xs: "none", md: "block" } }}>Elemento: Tabla</Grid>
+      <Grid sx={{ display: { xs: "none", md: "block" } }}>Elemento: Tabla <TableUI/></Grid>
 
       {/* Información adicional */}
       <Grid>Elemento: Información adicional</Grid>
