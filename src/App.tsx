@@ -1,4 +1,4 @@
-//import { useState } from 'react'
+import { useState } from 'react'
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 import { Grid } from '@mui/material';
@@ -13,9 +13,16 @@ import ChartUI from './components/ChartUI';
 
 
 
+
 function App() {
   //const [count, setCount] = useState(0)
-  const dataFetchOutput = useFetchData();
+  //const dataFetchOutput = useFetchData();
+
+  // Utilice una variable de estado para almacenar la opción seleccionada por el usuario
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  // Comunique la opción seleccionada al hook useFetchData
+  const dataFetchOutput = useFetchData(selectedOption);
 
   
 
@@ -30,7 +37,8 @@ function App() {
       <Grid container justifyContent="right" alignItems="center">Elemento: Alertas<AlertUI description="No se preveen lluvias"/></Grid>
 
       {/* Selector */}
-      <Grid size={{ xs: 12, md: 3  }}><SelectorUI></SelectorUI></Grid>
+      <Grid size={{ xs: 12, md: 3  }}><SelectorUI onOptionSelect={setSelectedOption} ></SelectorUI></Grid>
+      
 
       {/*carga*/}
       {dataFetchOutput.isLoading && (
@@ -81,6 +89,8 @@ function App() {
 
       {/* Información adicional */}
       <Grid>Elemento: Información adicional</Grid>
+
+      
 
     </Grid>
   )
