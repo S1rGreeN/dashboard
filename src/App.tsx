@@ -1,36 +1,102 @@
-//import { useState } from 'react'
+import { useState } from 'react'
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 import { Grid } from '@mui/material';
 import './App.css'
+import HeaderUI from './components/HeaderUI';
+import AlertUI from './components/AlertUI';
+import SelectorUI from './components/SelectorUI'
+import IndicatorUI from './components/IndicatorUI'
+import useFetchData from './functions/useFetchData';
+import TableUI from './components/TableUI';
+import ChartUI from './components/ChartUI';
+import ExtraUI from './components/ExtraUI';
+
+
+
 
 function App() {
   //const [count, setCount] = useState(0)
+  //const dataFetchOutput = useFetchData();
+
+  // Utilice una variable de estado para almacenar la opción seleccionada por el usuario
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  // Comunique la opción seleccionada al hook useFetchData
+  const dataFetchOutput = useFetchData(selectedOption);
+
+  
 
   return (
 
     <Grid container spacing={5} justifyContent="center" alignItems="center">
 
       {/* Encabezado */}
-      <Grid size={{ xs: 12, md: 12 }}>Elemento: Encabezado</Grid>
+      <Grid size={{ xs: 12, md: 12 }}>S1rGreeN<HeaderUI/></Grid>
 
       {/* Alertas */}
-      <Grid >Elemento: Alertas</Grid>
+      <Grid container justifyContent="right" alignItems="center">Elemento: Alertas<AlertUI description="No se preveen lluvias"/></Grid>
 
       {/* Selector */}
-      <Grid size={{ xs: 12, md: 3  }}>Elemento: Selector</Grid>
+      <Grid size={{ xs: 12, md: 3  }}><SelectorUI onOptionSelect={setSelectedOption} ></SelectorUI></Grid>
+      
+
+      {/*carga*/}
+      {dataFetchOutput.isLoading && (
+        <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>Cargando datos del clima...</Grid>
+      )}
+      {/*En caso de error */}
+      {dataFetchOutput.error && (
+        <Grid size={{ xs: 12 }} sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            {/* uso el componente AlertUI para mostrar el error real */}
+            <AlertUI description={`Error recuperando datos: ${dataFetchOutput.error}`} />
+        </Grid>
+      )}
 
       {/* Indicadores */}
-      <Grid size={{ xs: 12, md: 9 }}>Elemento: Indicadores</Grid>
+      {!dataFetchOutput.isLoading && !dataFetchOutput.error && dataFetchOutput.data && (
+        <Grid container size={{ xs: 12, md: 9 }}>
+          <Grid size={{ xs: 12, md: 3 }}> 
+            <IndicatorUI title='Temperatura (2m)' 
+            description={`${dataFetchOutput.data.current.temperature_2m} ${dataFetchOutput.data.current_units.apparent_temperature}`} />
+          </Grid> 
+          {/*Elemento: Indicadores*/}
+
+          <Grid size={{ xs: 12, md: 3 }}>
+          <IndicatorUI title='Apparent Temperature' 
+          description={`${dataFetchOutput.data.current.apparent_temperature} ${dataFetchOutput.data.current_units.temperature_2m}`}/>
+            {/* IndicatorUI con la Temperatura aparente en °C' */}
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 3 }}>
+            {/* IndicatorUI con la Velocidad del viento en km/h' */}
+            <IndicatorUI title='Wind Speed (10 m)' 
+            description={`${dataFetchOutput.data.current.wind_speed_10m} ${dataFetchOutput.data.current_units.wind_speed_10m}`}/>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 3 }}>
+            <IndicatorUI title='Relative Humidity (2 m)' 
+            description={`${dataFetchOutput.data.current.relative_humidity_2m} ${dataFetchOutput.data.current_units.relative_humidity_2m}`}/>
+            {/* IndicatorUI con la Humedad relativa en %' */}
+          </Grid>
+        </Grid>
+      )}
 
       {/* Gráfico */}
-      <Grid sx={{ display: { xs: "none", md: "block"} }}>Elemento: Gráfico</Grid>
+      <Grid sx={{ display: { xs: "none", md: "block"} }}>Gráfico <ChartUI{...dataFetchOutput}/> </Grid>
 
       {/* Tabla */}
-      <Grid sx={{ display: { xs: "none", md: "block" } }}>Elemento: Tabla</Grid>
+      <Grid sx={{ display: { xs: "none", md: "block" } }}>Tabla <TableUI{...dataFetchOutput}/></Grid>
 
       {/* Información adicional */}
-      <Grid>Elemento: Información adicional</Grid>
+
+      <Grid size = {{ xs: 12, md: 3 }} >
+        <ExtraUI title = {`${dataFetchOutput.data?.hourly.time[dataFetchOutput.data.hourly.temperature_2m.indexOf(Math.max(...(dataFetchOutput.data?.hourly.temperature_2m || [])))]}`}
+        description = {`${dataFetchOutput.data?.hourly.temperature_2m[dataFetchOutput.data?.hourly.temperature_2m.indexOf(Math.max(...dataFetchOutput.data?.hourly.temperature_2m))]}`}
+        />
+        </Grid>
+
+      
 
     </Grid>
   )
