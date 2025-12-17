@@ -13,13 +13,13 @@ export default function ChartUI(datita: proceDatita) {
         {datita.data && (
                <>
                    <Typography variant="h5" component="div">
-                       Chart arrLabels vs Temperature & WindSpeed
+                       Temperature & WindSpeed
                    </Typography>
                    <LineChart
                        height={300}
                        series={[
-                           { data: datita.data.hourly.temperature_2m, label: 'value1' },
-                           { data: datita.data.hourly.wind_speed_10m, label: 'value2' },
+                           { data: datita.data.hourly.temperature_2m, label: 'Temperature' },
+                           { data: datita.data.hourly.wind_speed_10m, label: 'Wind' },
                        ]}
                        xAxis={[{ scaleType: 'point', data: datita.data.hourly.time }]}
                    />

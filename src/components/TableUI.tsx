@@ -1,5 +1,7 @@
 import Box from '@mui/material/Box';
 import { DataGrid, type GridColDef } from '@mui/x-data-grid';
+import type { proceDatita } from '../functions/useFetchData';
+import { useState, useEffect } from 'react';
 
 function combineArrays(arrLabels: Array<string>, arrValues1: Array<number>, arrValues2: Array<number>) {
    return arrLabels.map((label, index) => ({
@@ -14,20 +16,20 @@ const columns: GridColDef[] = [
    { field: 'id', headerName: 'ID', width: 90 },
    {
       field: 'label',
-      headerName: 'Label',
-      width: 125,
+      headerName: 'Fecha',
+      width: 200,
    },
    {
       field: 'value1',
-      headerName: 'Value 1',
+      headerName: 'Temperature',
       width: 125,
    },
    {
       field: 'value2',
-      headerName: 'Value 2',
+      headerName: 'Wind',
       width: 125,
    },
-   {
+   /*{
       field: 'resumen',
       headerName: 'Resumen',
       description: 'No es posible ordenar u ocultar esta columna.',
@@ -35,32 +37,42 @@ const columns: GridColDef[] = [
       hideable: false,
       width: 100,
       valueGetter: (_, row) => `${row.label || ''} ${row.value1 || ''} ${row.value2 || ''}`,
-   },
+   }, */
 ];
 
-const arrValues1 = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const arrValues2 = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const arrLabels = ['A','B','C','D','E','F','G'];
 
-export default function TableUI() {
-
-   const rows = combineArrays(arrLabels, arrValues1, arrValues2);
+export default function TableUI(datita: proceDatita) {
+   {datita.isLoading && console.log("Loading")}
+   {datita.error && console.log(datita.error)}
+   const [rows, setRows] = useState(combineArrays([""], [0], [0]));
+   useEffect(()=> {
+      if(datita.data){
+         setRows(combineArrays(datita.data.hourly.time, datita.data.hourly.temperature_2m, datita.data.hourly.wind_speed_10m))
+      }
+   }, [datita]);
 
    return (
-      <Box sx={{ height: 350, width: '100%' }}>
-         <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{
-               pagination: {
-                  paginationModel: {
-                     pageSize: 5,
+      <>
+         {datita.isLoading && <p>Loading...</p>}
+         {datita.error && <p>`${datita.error}`</p>}
+         {datita.data && (
+            <Box sx={{ height: 350, width: '100%' }}>
+            <DataGrid
+               rows={rows}
+               columns={columns}
+               initialState={{
+                  pagination: {
+                     paginationModel: {
+                        pageSize: 5,
+                     },
                   },
-               },
-            }}
-            pageSizeOptions={[5]}
-            disableRowSelectionOnClick
-         />
-      </Box>
+               }}
+               pageSizeOptions={[5]}
+               disableRowSelectionOnClick
+            />
+         </Box>
+         )}
+         
+      </>
    );
 }

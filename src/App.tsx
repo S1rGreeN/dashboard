@@ -10,6 +10,7 @@ import IndicatorUI from './components/IndicatorUI'
 import useFetchData from './functions/useFetchData';
 import TableUI from './components/TableUI';
 import ChartUI from './components/ChartUI';
+import ExtraUI from './components/ExtraUI';
 
 
 
@@ -31,7 +32,7 @@ function App() {
     <Grid container spacing={5} justifyContent="center" alignItems="center">
 
       {/* Encabezado */}
-      <Grid size={{ xs: 12, md: 12 }}>Elemento: Encabezado <HeaderUI/></Grid>
+      <Grid size={{ xs: 12, md: 12 }}>S1rGreeN<HeaderUI/></Grid>
 
       {/* Alertas */}
       <Grid container justifyContent="right" alignItems="center">Elemento: Alertas<AlertUI description="No se preveen lluvias"/></Grid>
@@ -82,13 +83,18 @@ function App() {
       )}
 
       {/* Gráfico */}
-      <Grid sx={{ display: { xs: "none", md: "block"} }}>Elemento: Gráfico <ChartUI{...dataFetchOutput}/> </Grid>
+      <Grid sx={{ display: { xs: "none", md: "block"} }}>Gráfico <ChartUI{...dataFetchOutput}/> </Grid>
 
       {/* Tabla */}
-      <Grid sx={{ display: { xs: "none", md: "block" } }}>Elemento: Tabla <TableUI/></Grid>
+      <Grid sx={{ display: { xs: "none", md: "block" } }}>Tabla <TableUI{...dataFetchOutput}/></Grid>
 
       {/* Información adicional */}
-      <Grid>Elemento: Información adicional</Grid>
+
+      <Grid size = {{ xs: 12, md: 3 }} >
+        <ExtraUI title = {`${dataFetchOutput.data?.hourly.time[dataFetchOutput.data.hourly.temperature_2m.indexOf(Math.max(...(dataFetchOutput.data?.hourly.temperature_2m || [])))]}`}
+        description = {`${dataFetchOutput.data?.hourly.temperature_2m[dataFetchOutput.data?.hourly.temperature_2m.indexOf(Math.max(...dataFetchOutput.data?.hourly.temperature_2m))]}`}
+        />
+        </Grid>
 
       
 
